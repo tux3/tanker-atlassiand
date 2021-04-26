@@ -43,7 +43,7 @@ pub async fn atlassian_search(
 
 pub async fn get_tep(config: &Config, idx: u32) -> Result<impl Reply, Rejection> {
     let tep_ancestor = 897909373;
-    let uri = atlassian_search(config, tep_ancestor, &idx.to_string()).await?;
+    let uri = atlassian_search(config, tep_ancestor, &format!("{:>03}", idx)).await?;
     Ok(warp::redirect(uri))
 }
 
