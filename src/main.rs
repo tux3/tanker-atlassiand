@@ -53,6 +53,16 @@ pub async fn get_readme(config: &Config, title: String) -> Result<impl Reply, Re
     Ok(warp::redirect(uri))
 }
 
+pub async fn get_bench(_config: &Config, title: String) -> Result<impl Reply, Rejection> {
+    if title == "js" {
+        Ok(warp::redirect("https://grafana.dev.tanker.io/d/DZ08ma1Gz/sdk-js".parse::<Uri>().unwrap()))
+    } else if title == "native" {
+        Ok(warp::redirect("https://grafana.dev.tanker.io/d/eXxLvEJGz/sdk-native".parse::<Uri>().unwrap()))
+    } else {
+        Err(warp::reject())
+    }
+}
+
 #[tokio::main]
 async fn main() {
     let args = App::new("tanker-atlassiand")
@@ -74,9 +84,10 @@ async fn main() {
 
     let tep = warp::path!("tep" / u32).and_then(move |idx| get_tep(config, idx));
     let readme = warp::path!("readme" / String).and_then(move |idx| get_readme(config, idx));
+    let bench = warp::path!("bench" / String).and_then(move |idx| get_bench(config, idx));
 
     let routes = warp::get()
-        .and(health.or(tep).or(readme))
+        .and(health.or(tep).or(readme).or(bench))
         .with(warp::cors().allow_any_origin().allow_method(Method::GET));
 
     warp::serve(routes).run(([0, 0, 0, 0], 80)).await;

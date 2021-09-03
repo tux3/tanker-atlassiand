@@ -1,4 +1,4 @@
-FROM rust:1.50 as builder
+FROM rust:1.54 as builder
 
 # Prebuild deps layer
 COPY Cargo.* ./
